@@ -23,13 +23,13 @@ colorWheel = iro.ColorWheel("#color-wheel", {
 	}
 });
 
-document.querySelector('.wheel').addEventListener("touchstart", function (e) {
+document.querySelector('.wheel').addEventListener("pointerdown", function (e) {
 	handleMouseDown(e);
 }, false);
-document.querySelector('.wheel').addEventListener("touchmove", function (e) {
+document.querySelector('.wheel').addEventListener("pointermove", function (e) {
 	handleMouseMove(e);
 }, false);
-document.querySelector('.wheel').addEventListener("touchend", function (e) {
+document.querySelector('.wheel').addEventListener("pointercancel", function (e) {
 	handleMouseUp(e);
 }, false);
 

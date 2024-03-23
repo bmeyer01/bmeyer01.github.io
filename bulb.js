@@ -26,7 +26,7 @@ colorWheel = iro.ColorWheel("#color-wheel", {
 document.querySelector('.wheel').addEventListener('mousedown', function (e) {
 	handleMouseDown(e);
 }, false);
-document.querySelector('.wheel').addEventListener('mousemove', function (e) {
+document.querySelector('.wheel').addEventListener('touchmove', function (e) {
 	handleMouseMove(e);
 }, false);
 document.querySelector('.wheel').addEventListener('mouseup', function (e) {

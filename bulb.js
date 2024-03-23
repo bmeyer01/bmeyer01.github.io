@@ -75,7 +75,7 @@ function connect() {
 	console.log('Requesting Bluetooth Device...');
 	navigator.bluetooth.requestDevice({
 			filters: [{
-				services: [mpy-uart]
+				services: [0xffe5]
 			}]
 		})
 		.then(device => {

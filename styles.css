@@ -24,15 +24,10 @@ i.material-icons {
     display: flex; 
     justify-content: space-between;
 }
-
-.mic-button, 
+ 
 .power-button {
     text-align: center;
 }
-
-.mic-button {
-    margin-top: 2pc;
-} 
 
 .power-button {
     margin-bottom: 2pc;
@@ -42,20 +37,8 @@ i.material-icons {
     display: none;
 }
 
-.title-and-connect {
-    display: inherit;
-}
-
-.connect-another-icon {
-    top: 17px !important;
-    left: 4px !important;
-    margin-left: -10px !important;
-    position: relative !important;
-    float: right !important;
-}
-
-.connect-another {
-    margin-left: 10px;
+#title {
+    text-align: center;
 }
 
 #on-off {

@@ -75,7 +75,7 @@ function connect() {
 	console.log('Requesting Bluetooth Device...');
 	navigator.bluetooth.requestDevice({
 			filters: [{
-				services: [0xffe5]
+				name: [PicoW]
 			}]
 		})
 		.then(device => {

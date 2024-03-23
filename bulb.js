@@ -85,11 +85,11 @@ function connect() {
 		})
 		.then(server => {
 			console.log('Getting Service 0xffe5 - Light control...');
-			return server.getPrimaryService(0xffe5);
+			return server.getPrimaryService(mpy-uart);
 		})
 		.then(service => {
 			console.log('Getting Characteristic 0xffe9 - Light control...');
-			return service.getCharacteristic(0xffe5);
+			return service.getCharacteristic(mpy-uart);
 		})
 		.then(characteristic => {
 

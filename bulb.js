@@ -75,7 +75,7 @@ function connect() {
 	console.log('Requesting Bluetooth Device...');
 	navigator.bluetooth.requestDevice({
 			filters: [{
-				name: [mpy-uart]
+				services: [0xffe5]
 			}]
 		})
 		.then(device => {
@@ -85,11 +85,11 @@ function connect() {
 		})
 		.then(server => {
 			console.log('Getting Service 0xffe5 - Light control...');
-			return server.getPrimaryService(mpy-uart);
+			return server.getPrimaryService(0xffe5);
 		})
 		.then(service => {
 			console.log('Getting Characteristic 0xffe9 - Light control...');
-			return service.getCharacteristic(mpy-uart);
+			return service.getCharacteristic(0xffe5);
 		})
 		.then(characteristic => {
 

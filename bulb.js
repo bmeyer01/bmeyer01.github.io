@@ -104,7 +104,8 @@ function connect() {
 }
 
 function turnOn() {
-	let data = new Uint8Array([0xcc, 0x23, 0x33]);
+	let data = ([204, 35, 51]);
+	//let data = new Uint8Array([0xcc, 0x23, 0x33]);
 	return ledCharacteristic.forEach(led => led.writeValue(data)
 		.catch(err => console.log('Error when turning on! ', err))
 		.then(() => {
@@ -114,7 +115,8 @@ function turnOn() {
 }
 
 function turnOff() {
-	let data = new Uint8Array([0xcc, 0x24, 0x33]);
+	let data = ([204, 36, 51]);
+	//let data = new Uint8Array([0xcc, 0x24, 0x33]);
 	return ledCharacteristic.forEach(led => led.writeValue(data)
 		.catch(err => console.log('Error when turning off! ', err))
 		.then(() => {
@@ -140,25 +142,26 @@ function toggleButtons() {
 }
 
 function setColor(red, green, blue) {
-	let data = new Uint8Array([0x56, red, green, blue, 0x00, 0xf0, 0xaa]);
+	let data = ([86, red, green, blue, 0, 240, 170]);
+	//let data = new Uint8Array([0x56, red, green, blue, 0x00, 0xf0, 0xaa]);
 	return ledCharacteristic.forEach(led => led.writeValue(data)
 		.catch(err => console.log('Error when writing value! ', err)));
 }
 
-function red() {
-	return setColor(255, 0, 0)
-		.then(() => console.log('Color set to Red'));
-}
+//function red() {
+//	return setColor(255, 0, 0)
+//		.then(() => console.log('Color set to Red'));
+//}
 
-function green() {
-	return setColor(0, 255, 0)
-		.then(() => console.log('Color set to Green'));
-}
+//function green() {
+//	return setColor(0, 255, 0)
+//		.then(() => console.log('Color set to Green'));
+//}
 
-function blue() {
-	return setColor(0, 0, 255)
-		.then(() => console.log('Color set to Blue'));
-}
+//function blue() {
+//	return setColor(0, 0, 255)
+//		.then(() => console.log('Color set to Blue'));
+//}
 
 function listen() {
 	annyang.start({

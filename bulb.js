@@ -104,7 +104,7 @@ function connect() {
 }
 
 function turnOn() {
-	let data = ([204, 35, 51]);
+	let data = (204, 35, 51);
 	//let data = new Uint8Array([0xcc, 0x23, 0x33]);
 	return ledCharacteristic.forEach(led => led.writeValue(data)
 		.catch(err => console.log('Error when turning on! ', err))
@@ -115,7 +115,7 @@ function turnOn() {
 }
 
 function turnOff() {
-	let data = ([204, 36, 51]);
+	let data = (204, 36, 51);
 	//let data = new Uint8Array([0xcc, 0x24, 0x33]);
 	return ledCharacteristic.forEach(led => led.writeValue(data)
 		.catch(err => console.log('Error when turning off! ', err))
@@ -142,7 +142,7 @@ function toggleButtons() {
 }
 
 function setColor(red, green, blue) {
-	let data = ([86, red, green, blue, 0, 240, 170]);
+	let data = (86, red, green, blue, 0, 240, 170);
 	//let data = new Uint8Array([0x56, red, green, blue, 0x00, 0xf0, 0xaa]);
 	return ledCharacteristic.forEach(led => led.writeValue(data)
 		.catch(err => console.log('Error when writing value! ', err)));

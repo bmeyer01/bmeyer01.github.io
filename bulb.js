@@ -1,47 +1,43 @@
 'use strict';
 
-let ledCharacteristic = [];
-let turnedOn = false;
+let myCharacteristic;
+let deviceName;
+let turnedOn = true;
 let colorWheel = null;
 let oldColor = null;
 let mouseIsDown = false;
 
-colorWheel = iro.ColorWheel("#color-wheel", {
+let Finalcolor = "255, 255, 255";
+
+colorWheel = iro.ColorPicker("#wheelPicker", {
 	width: 320,
-	height: 320,
-	padding: 4,
-	sliderMargin: 24,
-	markerRadius: 8,
 	color: "rgb(255, 255, 255)",
-	styles: {
-		".on-off": {
-			"background-color": "rgb"
-		},
-		".on-off:hover": {
-			"background-color": "rgb"
-		}
-	}
+	borderWidth: 1,
+  borderColor: "#fff",
+  layout: [
+    {
+      component: iro.ui.Wheel,
+    },
+  ]
 });
 
-document.querySelector('.wheel').addEventListener("pointerdown", function (e) {
+document.querySelector('.wheel').addEventListener('pointerdown', function (e) {
 	handleMouseDown(e);
 }, false);
-document.querySelector('.wheel').addEventListener("pointermove", function (e) {
+document.querySelector('.wheel').addEventListener('pointermove', function (e) {
 	handleMouseMove(e);
 }, false);
-document.querySelector('.wheel').addEventListener("pointercancel", function (e) {
+document.querySelector('.wheel').addEventListener('pointercancel', function (e) {
 	handleMouseUp(e);
 }, false);
 
 function handleMouseDown(e) {
-
 	// mousedown stuff here
 	mouseIsDown = true;
 }
 
 function handleMouseUp(e) {
 	updateColor();
-
 	// mouseup stuff here
 	mouseIsDown = false;
 }
@@ -54,14 +50,6 @@ function handleMouseMove(e) {
 	updateColor();
 }
 
-function updateColor() {
-	if (oldColor != null && oldColor != "" && oldColor != colorWheel.color.rgbString) {
-		setColor(colorWheel.color.rgb.r, colorWheel.color.rgb.g, colorWheel.color.rgb.b);
-	}
-
-	oldColor = colorWheel.color.rgbString;
-}
-
 function onConnected() {
 	document.querySelector('.connect-button').classList.add('hidden');
 	document.querySelector('.wheel').classList.remove('hidden');
@@ -70,10 +58,14 @@ function onConnected() {
 }
 
 function connect() {
+
+	let serviceUuid = "0000ffe0-0000-1000-8000-00805f9b34fb";
+	let characteristicUuid = "0000ffe1-0000-1000-8000-00805f9b34fb";
+
 	console.log('Requesting Bluetooth Device...');
 	navigator.bluetooth.requestDevice({
 			filters: [{
-				services: [0xffe5]
+				services: [serviceUuid]
 			}]
 		})
 		.then(device => {
@@ -83,46 +75,45 @@ function connect() {
 		})
 		.then(server => {
 			console.log('Getting Service 0xffe5 - Light control...');
-			return server.getPrimaryService(0xffe5);
+			return server.getPrimaryService(serviceUuid);
 		})
 		.then(service => {
 			console.log('Getting Characteristic 0xffe9 - Light control...');
-			return service.getCharacteristic(0xffe9);
+			return service.getCharacteristic(characteristicUuid);
 		})
 		.then(characteristic => {
 
-			if (!ledCharacteristic.includes(characteristic)) {
-				ledCharacteristic.push(characteristic);
-				if (ledCharacteristic.length > 1) document.querySelector('#title').innerHTML += " x" + ledCharacteristic.length;
-				console.log('All ready! ' + characteristic.service.device.name + " added");
-			}
+			myCharacteristic = characteristic;
 			onConnected();
+            return myCharacteristic.startNotifications().then(_ => {
+                console.log('> Notifications started');
+                log("Connected to: " + deviceName);
+                bluetoothConnected = true;
+                setBluetoothDeviceName(deviceName);
+                myCharacteristic.addEventListener('characteristicvaluechanged',
+                    handleNotifications);		
+            });
+
 		})
+		
 		.catch(error => {
 			console.log('Argh! ' + error);
-		});
+		});	
 }
 
 function turnOn() {
-	let data = (204, 35, 51);
-	//let data = new Uint8Array([0xcc, 0x23, 0x33]);
-	return ledCharacteristic.forEach(led => led.writeValue(data)
-		.catch(err => console.log('Error when turning on! ', err))
-		.then(() => {
-			turnedOn = true;
-			toggleButtons();
-		}));
+
+	let toggle = "rgb(255, 255, 255)";
+	turnedOn = true;
+	toggleButtons();
+    return myCharacteristic.writeValue(new TextEncoder().encode(toggle+"\n"));
 }
 
 function turnOff() {
-	let data = (204, 36, 51);
-	//let data = new Uint8Array([0xcc, 0x24, 0x33]);
-	return ledCharacteristic.forEach(led => led.writeValue(data)
-		.catch(err => console.log('Error when turning off! ', err))
-		.then(() => {
-			turnedOn = false;
-			toggleButtons();
-		}));
+	let toggle = "rgb(0, 0, 0)";
+	turnedOn = false;
+	toggleButtons();
+    return myCharacteristic.writeValue(new TextEncoder().encode(toggle+"\n"));
 }
 
 function turnOnOff() {
@@ -137,48 +128,32 @@ function toggleButtons() {
 	Array.from(document.querySelectorAll('.color-buttons button')).forEach(function (colorButton) {
 		colorButton.disabled = !turnedOn;
 	});
-	document.querySelector('.mic-button button').disabled = !turnedOn;
     turnedOn ? document.querySelector('.wheel').classList.remove('hidden') : document.querySelector('.wheel').classList.add('hidden');
 }
 
-function setColor(red, green, blue) {
-	let data = (86, red, green, blue, 0, 240, 170);
-	//let data = new Uint8Array([0x56, red, green, blue, 0x00, 0xf0, 0xaa]);
-	return ledCharacteristic.forEach(led => led.writeValue(data)
-		.catch(err => console.log('Error when writing value! ', err)));
+function setColor() {
+	return myCharacteristic.writeValue(new TextEncoder().encode(toggle+"\n"));
 }
 
-//function red() {
-//	return setColor(255, 0, 0)
-//		.then(() => console.log('Color set to Red'));
-//}
+colorWheel.on(["color:init", "color:change"], function(color){
+	values.innerHTML = [
+		"hex: " + color.hexString,
+		"rgb: " + color.rgbString,
+		"hsl: " + color.hslString,
+	  ].join("<br>");
 
-//function green() {
-//	return setColor(0, 255, 0)
-//		.then(() => console.log('Color set to Green'));
-//}
+	  Finalcolor = color.rgbString;
 
-//function blue() {
-//	return setColor(0, 0, 255)
-//		.then(() => console.log('Color set to Blue'));
-//}
+
+	  
+});
+
+function updateColor() {
+    return myCharacteristic.writeValue(new TextEncoder().encode(Finalcolor+"\n"));
+}
 
 function listen() {
 	annyang.start({
 		continuous: true
 	});
 }
-
-// Voice commands
-// annyang.addCommands({
-// 	'red': red,
-// 	'green': green,
-// 	'blue': blue,
-// 	'turn on': turnOn,
-// 	'turn off': turnOff
-// });
-
-// Install service worker - for offline support
-// if ('serviceWorker' in navigator) {
-// 	navigator.serviceWorker.register('serviceworker.js');
-// }
